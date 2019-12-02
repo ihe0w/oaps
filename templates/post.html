@@ -7,20 +7,35 @@
 {% block content %}
 <div>
        <form id="form" action="/upload" method="post"  enctype='multipart/form-data'><br/>
-            Title:<input type="text" name="title" required><br/>
-            Abstract:<input type="text" name="abstract" required><br/>
-            Highlight_Part:<input type="text" name="highlight" required><br/>
-            E-mail:<input type="email" name="email" required><br/>
-            Subject:<input type="text" name="subject" required><br/>
+            Title:<input type="text" name="title" required="required"><br/>
+            Abstract:<input type="text" name="abstract" required="required"><br/>
+            Highlight_Part:<input type="text" name="highlight" required="required"><br/>
+            E-mail:<input type="email" name="email" required="required" onblur="checkEmail(this)">
+            <span id="hintText"></span><br/>
+            Subject:<input type="text" name="subject" required="required"><br/>
             File upload:<br/>
-           <input type="file" accept="application/pdf" name="pdf" required><br/>
+           <input type="file" accept="application/pdf" name="pdf" required="required"><br/>
            (notice: file size should less than 20MB.)
        </form>
  </div>
     <input type="text" id="code" disabled>
     <input type="text" id="input">
     <button onclick="validate()">submit</button>
-    <script>
+<script>
+
+    //check email format
+    function checkEmail(input_elem) {
+        //get email from user's input
+        //response according to validation
+        if (input_elem.value.indexOf('@')===-1){
+            document.getElementById('hintText').innerHTML="<span style='color: red; '>请输正确的Email！</span>";
+        }
+        else{
+            document.getElementById('hintText').innerText="";
+        }
+
+    }
+
     var code; // 在全局定义验证码
 
 // 生成验证码

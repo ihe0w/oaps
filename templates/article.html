@@ -23,15 +23,46 @@
     <input type="text" id="code" disabled>
     <input type="text" id="input">
     <button onclick="validate()">submit</button>
+    <script>
+        // var cips=[];
+    </script>
 </div>
  <div class="comment" >
  <h1>COMMENTS</h1>
-    {% for comment in comments %}
+     <div id="div"></div>
+    {% for i in range(0,comments |length) %}
+        {% set comment=comments[i] %}
+        {% set cip=cips[i]   %}
+<!--        {% set commentState=cips[i].vote_state%}-->
         <p>{{ loop.index }}. Email:{{ comment.email }}</p>
         <p>PostTime:{{ comment.postTime }}</p>
-        <p> Content:{{ comment.content }}</p>
-        <button><a href="../cupvote/{{ comment.id }}">up:{{ comment.upvoteNum }}</a></button>
-        <button><a href="../cdownvote/{{ comment.id }}">down:{{ comment.downvoteNum }}</a></button>
+        <p>Content:{{ comment.content }}</p>
+
+        <div id="vote_div">
+
+        </div>
+        {% set up_btn_id='up_btn'~ i|string %}
+        {% set down_btn_id='down_btn'~ i|string %}
+     <script>
+         // cips.push('{{cips[i]}}');
+         //     commentState="{{ cips[i].vote_state}}";
+         //     console.log(commentState);
+         //     console.log('{{up_btn_id}}')
+        </script>
+        {% if cip.vote_state ==0 %}
+            <button id='{{up_btn_id}}' onclick="upVote(this)">up:{{ comment.upvoteNum }}</button>
+<!--        <button><a href="../cupvote/{{ comment.id }}">up:{{ comment.upvoteNum }}</a></button>-->
+            <button id="{{down_btn_id}}" onclick="downVote(this)">down:{{ comment.downvoteNum }}</button>
+<!--        <button><a href="../cdownvote/{{ comment.id }}">down:{{ comment.downvoteNum }}</a></button>-->
+        {% elif cip.vote_state ==1 %}
+            <button id='{{up_btn_id}}' onclick="upVote(this)" style="color: green">up:{{ comment.upvoteNum }}</button>
+            <button id="{{down_btn_id}}" onclick="downVote(this)">down:{{ comment.downvoteNum }}</button>
+        {% else %}
+            <button id='{{up_btn_id}}' onclick="upVote(this)">up:{{ comment.upvoteNum }} </button>
+            <button id="{{down_btn_id}}" onclick="downVote(this)" style="color: red">down:{{ comment.downvoteNum }} Hello{{cip}} Vote {{cip.vote_state}}</button>
+        {% endif %}
+
+
         {% if flag==1 %}
             <form action="../cdelete/{{ comment.id }}" method="post">
                 Password:<input type="password" name="psw">
@@ -42,7 +73,133 @@
 
  </div>
 
-    <script>
+<script>
+
+
+    //todo onload not works?
+//     console.log("hello");
+//     str='Hello {{ cips[0].vote_state}}';
+//     console.log(str);
+//     $('#vote_div').innerHTML='Hello {{ cips[0].vote_state}}';
+// window.onload=function(){
+//     //todo I don't know why it is does't works?
+//     console.log("hello");
+//     str='Hello {{ cips[0].vote_state}}';
+//     console.log(str);
+//     $('#div').innerHTML='Hello {{ cips[0].vote_state}}';
+//
+// };
+    //create dynamic
+    // $(function(){
+    //     $('#div').innerHTML='Hello {{ cips[0].vote_state}}';
+    //     //get vote button div
+    //     //create
+    // });
+    //request vote and get the result form server
+    function upVote(up_btn) {
+        // parseInt(this.id.split('').pop());
+        //get index of this btn
+        let ix=0;
+
+        //todo why is it(cips) a serials number from 1 to 72???
+        // for (let cip in cips)
+            // console.log(cip);
+        // console.log('Hello '+cips[ix].vote_state);
+        // console.log("up id "+up_btn);
+        //show change result compare to original state
+
+        //request to server
+
+    }
+    function downVote(down_btn) {
+        //get index of these btn and get original state
+        // let index=parseInt(down_btn.id.split('').pop());
+        // let cips='{{cips}}';
+        // let original_state=cips[index].vote_state;
+        // let new_state=original_state;
+        // //show change result compare to original state
+        //     //up -> cancel up and select down
+        // if(original_state===1) {
+        //     switchState(down_btn, index, 1);
+        //     new_state=2;
+        // }
+        //     //down -> cancel down
+        // else if (original_state===2) {
+        //     switchDownState(down_btn, false);
+        //     new_state=0;
+        // }
+        //     //default->select down
+        // else {
+        //     new_state=2;
+        //     switchDownState(down_btn, true);
+        // }
+        // //request server
+           var data={
+        'name':'kikay',
+        'age':18
+    }
+         $.ajax({
+        type:'GET',
+        url:'../test/',
+        data:data,
+        dataType:'json',//希望服务器返回json格式的数据
+        success:function(data){
+            alert(JSON.stringify(data));
+            alert(data['test'])
+        }
+    });
+
+        // let NewCip={'commentId':1,
+        // 'Ip':1,
+        // 'vote_state':new_state};
+        // let responseObj=$.ajax({
+        //     url:'',
+        //     data:NewCip
+        // });
+
+
+
+    }
+    function switchState(btn,index, current_state) {
+        if (current_state===1){
+            let up_id='up_btn'+index;
+            let up_btn=$('#'+up_id);
+            switchUpState(up_btn,false);
+            switchDownState(btn,true);
+        }
+        else {
+            let down_id='down_btn'+index;
+            let down_btn=$('#'+down_id);
+            switchDownState(down_btn,false);
+            switchUpState(btn,true);
+        }
+        //get up,down btn by index
+            //up selected-> cancel and select down
+    }
+    function switchUpState(btn, is_selected) {
+        if (is_selected){
+            btn.style={'color':'#00ff00'};
+        }
+        else {
+            btn.style={'color':'#000000'};
+        }
+    }
+    function switchDownState(btn, is_selected) {
+        if (is_selected){
+            btn.style={'color':'#ff0000'};
+        }
+        else {
+            btn.style={'color':'#000000'};
+        }
+    }
+    function vote(vote_id,click_state) {
+        //show change result compare to original state
+
+        //request to server
+
+
+    }
+
     var code; // 在全局定义验证码
 
 // 生成验证码
@@ -50,9 +207,9 @@ window.onload = function createCode() {
 	code = "";
 	var codeLength = 4;// 验证码的长度
 	var checkCode = document.getElementById("code");
-	var random = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D',
+	var random = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D',
 			'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-			'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');// 随机数
+			'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];// 随机数
 	for (var i = 0; i < codeLength; i++) {// 循环操作
 		var index = Math.floor(Math.random() * 36);// 取得随机数的索引（0~35）
 		code += random[index];// 根据索引取得随机数加到code上

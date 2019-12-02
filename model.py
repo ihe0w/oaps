@@ -69,6 +69,13 @@ class CommentIp(db.Model):
     comment_id = db.Column(db.Integer,db.ForeignKey('comment.id'),primary_key=True)
     vote_state = db.Column(db.Integer,default=0)
 
+    def as_json(self):
+        return dict(
+            ip_id=self.ip_id,
+            comment_id = self.comment_id,
+            vote_state = self.vote_state
+        )
+
 
 class ArticleIp(db.Model):
     __tablename__ = 'article_ip'

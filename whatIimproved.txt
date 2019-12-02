@@ -1,0 +1,7 @@
+in post.html
+    1.Some required fields are must be filled out.In the original version, it is not require user
+input all needed fields,.
+    2.check email format and inappropriate words in user input.in previous version, I found that app won't check
+email format.So I improved this and give a hint(I had to say it is alert ,but text hint,more friendly to user)  when format is incorrect.
+in article page
+    1.
