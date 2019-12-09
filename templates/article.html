@@ -24,7 +24,9 @@
     <input type="text" id="input">
     <button onclick="validate()">submit</button>
     <script>
-        // var cips=[];
+        var cip_states=[];
+        var cip_commentIds=[];
+        var cip_IpIds=[];
     </script>
 </div>
  <div class="comment" >
@@ -44,23 +46,23 @@
         {% set up_btn_id='up_btn'~ i|string %}
         {% set down_btn_id='down_btn'~ i|string %}
      <script>
-         // cips.push('{{cips[i]}}');
-         //     commentState="{{ cips[i].vote_state}}";
-         //     console.log(commentState);
-         //     console.log('{{up_btn_id}}')
+         cip_states.push('{{cip.vote_state}}');
+         cip_commentIds.push('{{cip.comment_id}}');
+         cip_IpIds.push('{{cip.ip_id}}');
         </script>
         {% if cip.vote_state ==0 %}
-            <button id='{{up_btn_id}}' onclick="upVote(this)">up:{{ comment.upvoteNum }}</button>
+            <button id='{{up_btn_id}}' onclick="vote(this,1)">up:{{ comment.upvoteNum }}</button>
 <!--        <button><a href="../cupvote/{{ comment.id }}">up:{{ comment.upvoteNum }}</a></button>-->
-            <button id="{{down_btn_id}}" onclick="downVote(this)">down:{{ comment.downvoteNum }}</button>
+            <button id="{{down_btn_id}}" onclick="vote(this,2)">down:{{ comment.downvoteNum }}</button>
 <!--        <button><a href="../cdownvote/{{ comment.id }}">down:{{ comment.downvoteNum }}</a></button>-->
         {% elif cip.vote_state ==1 %}
-            <button id='{{up_btn_id}}' onclick="upVote(this)" style="color: green">up:{{ comment.upvoteNum }}</button>
-            <button id="{{down_btn_id}}" onclick="downVote(this)">down:{{ comment.downvoteNum }}</button>
+            <button id='{{up_btn_id}}' onclick="vote(this,1)" style="color: green">up:{{ comment.upvoteNum }}</button>
+            <button id="{{down_btn_id}}" onclick="vote(this,2)">down:{{ comment.downvoteNum }}</button>
         {% else %}
-            <button id='{{up_btn_id}}' onclick="upVote(this)">up:{{ comment.upvoteNum }} </button>
-            <button id="{{down_btn_id}}" onclick="downVote(this)" style="color: red">down:{{ comment.downvoteNum }} Hello{{cip}} Vote {{cip.vote_state}}</button>
+            <button id='{{up_btn_id}}' onclick="vote(this,1)">up:{{ comment.upvoteNum }} </button>
+            <button id="{{down_btn_id}}" onclick="vote(this,2)" style="color: red">down:{{ comment.downvoteNum }}</button>
         {% endif %}
+<!--        <button id="vote" onclick="ajaxHello()" >submit</button>-->
 
 
         {% if flag==1 %}
@@ -74,131 +76,133 @@
  </div>
 
 <script>
-
-
-    //todo onload not works?
-//     console.log("hello");
-//     str='Hello {{ cips[0].vote_state}}';
-//     console.log(str);
-//     $('#vote_div').innerHTML='Hello {{ cips[0].vote_state}}';
-// window.onload=function(){
-//     //todo I don't know why it is does't works?
-//     console.log("hello");
-//     str='Hello {{ cips[0].vote_state}}';
-//     console.log(str);
-//     $('#div').innerHTML='Hello {{ cips[0].vote_state}}';
-//
-// };
-    //create dynamic
-    // $(function(){
-    //     $('#div').innerHTML='Hello {{ cips[0].vote_state}}';
-    //     //get vote button div
-    //     //create
-    // });
-    //request vote and get the result form server
-    function upVote(up_btn) {
-        // parseInt(this.id.split('').pop());
-        //get index of this btn
-        let ix=0;
-
-        //todo why is it(cips) a serials number from 1 to 72???
-        // for (let cip in cips)
-            // console.log(cip);
-        // console.log('Hello '+cips[ix].vote_state);
-        // console.log("up id "+up_btn);
+    // function ajaxHello() {
+    //     //todo 有没有这个stringfy都是一样的cip "{&#39;ip_id&#39;: 1, &#39;comment_id&#39;: 10, &#39;vote_state&#39;: 2}"
+    //     let original_cip=JSON.stringify("{{cips[0]}}");
+    //     let cip="{{cips[0]}}";
+    //     let state=original_cip.vote_state;
+    //     console.log("Hello "+state);
+    //     console.log("cip "+original_cip);
+    //     state=cip.vote_state;
+    //     console.log("Hello "+state);
+    //     console.log("cip "+cip);
+    // }
+    function vote(vote_btn,btn_type) {
+        //get index
+        let index=parseInt(vote_btn.id.split('').pop());
         //show change result compare to original state
-
-        //request to server
-
-    }
-    function downVote(down_btn) {
-        //get index of these btn and get original state
-        // let index=parseInt(down_btn.id.split('').pop());
-        // let cips='{{cips}}';
-        // let original_state=cips[index].vote_state;
-        // let new_state=original_state;
-        // //show change result compare to original state
-        //     //up -> cancel up and select down
-        // if(original_state===1) {
-        //     switchState(down_btn, index, 1);
-        //     new_state=2;
-        // }
-        //     //down -> cancel down
-        // else if (original_state===2) {
-        //     switchDownState(down_btn, false);
-        //     new_state=0;
-        // }
-        //     //default->select down
-        // else {
-        //     new_state=2;
-        //     switchDownState(down_btn, true);
-        // }
-        // //request server
-           var data={
-        'name':'kikay',
-        'age':18
-    }
-         $.ajax({
-        type:'GET',
-        url:'../test/',
-        data:data,
-        dataType:'json',//希望服务器返回json格式的数据
-        success:function(data){
-            alert(JSON.stringify(data));
-            alert(data['test'])
+        if (btn_type===1){
+            upVote(vote_btn,index);
         }
-    });
-
-        // let NewCip={'commentId':1,
-        // 'Ip':1,
-        // 'vote_state':new_state};
-        // let responseObj=$.ajax({
-        //     url:'',
-        //     data:NewCip
-        // });
-
-
+        else{
+            downVote(vote_btn,index);
+        }
+        //update vote state to server db
+        ajaxUpdateState(index);
 
     }
-    function switchState(btn,index, current_state) {
-        if (current_state===1){
-            let up_id='up_btn'+index;
-            let up_btn=$('#'+up_id);
-            switchUpState(up_btn,false);
-            switchDownState(btn,true);
+    //show change result compare to original state
+    function upVote(up_btn,index) {
+                //get index of these btn and get original state
+        // let index=parseInt(up_btn.id.split('').pop());
+        let original_state=cip_states[index];
+
+        //show change result compare to original state
+        if(original_state==='2') {
+            swapState(up_btn, index, original_state);
+            cip_states[index]='1';
+        }
+        else if (original_state==='1') {
+            toggleUpState(up_btn, false);
+            cip_states[index]='0';
         }
         else {
+            toggleUpState(up_btn, true);
+            cip_states[index]='1';
+        }
+    }
+
+    function downVote(down_btn,index) {
+        //get index of these btn and get original state
+        // let index=parseInt(down_btn.id.split('').pop());
+        let original_state=cip_states[index];
+
+        //show change result compare to original state
+            //up -> cancel up and select down
+        if(original_state==='1') {
+            swapState(down_btn, index, original_state);
+            cip_states[index]='2';
+        }
+            //down -> cancel down
+        else if (original_state==='2') {
+            toggleDownState(down_btn, false);
+            cip_states[index]='0';
+        }
+            //default->select down
+        else {
+            toggleDownState(down_btn, true);
+            cip_states[index]='2';
+        }
+    }
+
+    function ajaxUpdateState(index) {
+        let newCip={
+            'comment_id':cip_commentIds[index],
+            'ip_id':cip_IpIds[index],
+            'vote_state':cip_states[index]
+        };
+         $.ajax({
+        type:'GET',
+        url:'../vote/',
+        data:newCip,
+        dataType:'json',//希望服务器返回json格式的数据
+        success:function(data){
+            console.log(JSON.stringify(data));
+        }
+    });
+    }
+
+    function swapState(btn, index, original_state) {
+        if (original_state==='1'){
+            console.log("original_state");
+            let up_id='up_btn'+index;
+            let up_btn=$('#'+up_id)[0];
+            toggleUpState(up_btn,false);
+            toggleDownState(btn,true);
+        }
+        else {
+            console.log("xsadw");
             let down_id='down_btn'+index;
-            let down_btn=$('#'+down_id);
-            switchDownState(down_btn,false);
-            switchUpState(btn,true);
+            let down_btn=$('#'+down_id)[0];
+            toggleDownState(down_btn,false);
+            toggleUpState(btn,true);
         }
         //get up,down btn by index
             //up selected-> cancel and select down
     }
-    function switchUpState(btn, is_selected) {
+    function toggleUpState(btn, is_selected) {
+        console.log("up");
         if (is_selected){
-            btn.style={'color':'#00ff00'};
+            btn.style.color='green';
         }
         else {
-            btn.style={'color':'#000000'};
+            btn.style.color='black';
         }
     }
-    function switchDownState(btn, is_selected) {
+    function toggleDownState(btn, is_selected) {
+
+        console.log("down "+btn.id);
         if (is_selected){
-            btn.style={'color':'#ff0000'};
+            //get black is ok ,but why red is wrong?
+            btn.style.color='red';
+            // btn.style={'color':'#ff0000'};
+            console.log("down "+btn.style.color);
         }
         else {
-            btn.style={'color':'#000000'};
+            btn.style.color='black';
         }
     }
-    function vote(vote_id,click_state) {
-        //show change result compare to original state
 
-        //request to server
-
-
-    }
 
     var code; // 在全局定义验证码
 

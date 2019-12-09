@@ -79,6 +79,12 @@ class ArticleService:
     def nextId(self):
         return db.session.query(db.func.max(Article.id)).one()[0] + 1
 
+    # 将点赞差评存入数据库内
+    def vote(self,):
+        pass
+        # get cip model
+        # store it into db
+
     # 点赞,0-默认，1-点赞，2-差评
     def upvote(self, article_id, ip_id):
         aip = ipService.find_aip_both(article_id, ip_id)
@@ -180,6 +186,11 @@ class CommentService:
 
     def insert(self, comment):
         db.session.add(comment)
+        db.session.commit()
+
+    def vote(self,comment_id,ip_id,vote_state):
+        cip = ipService.find_cip_by_both(comment_id, ip_id)
+        cip.vote_state=vote_state
         db.session.commit()
 
     # 点赞,0-默认，1-点赞，2-差评

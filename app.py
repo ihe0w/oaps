@@ -2,7 +2,7 @@
 from datetime import time, datetime
 import time
 import smtplib
-from flask import Flask, render_template, request, redirect,jsonify
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import re
 import os
@@ -238,29 +238,34 @@ def article(article_id):
     comments = commentService.find_by_articleid(article_id)
     comments.reverse()
     # find all comment state related to this ip
-    cips=[]
-    for index in range(0,len(comments)):
-        cips.append(json.dumps((ipService.find_cip_by_both(comments[index].id,ip.id)).as_json()))
+    cips = []
+    for index in range(0, len(comments)):
+        cips.append(((ipService.find_cip_by_both(comments[index].id, ip.id)).as_json()))
 
     if aip is None:  # 第一次访问
         aip = ArticleIp(ip_id=ip.id, article_id=article_id, vote_state=0)
         ipService.insert(aip)
         articleService.addAccess(article)
     # todo what the response means?
-    return render_template('article.html', article=article, user=user, comments=comments, flag=0,cips=cips)
+    return render_template('article.html', article=article, user=user, comments=comments, flag=0, cips=cips)
 
 
 # update vote data
-@app.route('/test',methods=['GET','POST'])
-def test():
-    # 获取Get数据
-    name = request.args.get('name')
-    age = int(request.args.get('age'))
-    # 返回
-    if name == 'kikay' and age == 18:
-        return jsonify({'result': 'ok'})
-    else:
-        return jsonify({'result': 'error'})
+@app.route('/vote/', methods=['GET', 'POST'])
+def vote():
+    cid = request.args.get('comment_id')
+    ip_id = request.args.get('ip_id')
+    state = request.args.get('vote_state')
+    commentService.vote(cid, ip_id, state)
+    return jsonify({'result': 'ok'})
+    # get comentId,Ip,vote_state
+    #
+    # name = request.args.get('name')
+    # age = int(request.args.get('age'))
+    # if name == 'kikay' and age == 18:
+    #     return jsonify({'result': 'ok'})
+    # else:
+    #     return jsonify({'result': 'error'})
 
 
 '''
@@ -435,5 +440,24 @@ def cdelete(comment_id):
     return redirect('/article/' + str(comment.article_id))
 
 
+# if __name__ == '__main__':
+#     app.run()
+
+
+def test_should_ret_json_str_when_is_self_obj():
+    # cip = commentService.find_by_id(1)
+    cip = ipService.find_cip_by_both(1, 1)
+    cip_dict = serialize(cip)
+    print(cip_dict)
+    cip_json = jsonify(cip_dict)
+    print(cip_json)
+
+
+def serialize(model):
+    from sqlalchemy.orm import class_mapper
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    return dict((c, getattr(model, c)) for c in columns)
+
+
 if __name__ == '__main__':
-    app.run()
+    test_should_ret_json_str_when_is_self_obj()
